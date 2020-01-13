@@ -1,0 +1,2 @@
+expr/supecomp: syntax error in tests/syntax_error2.e in line 2: error while parsing FACTORS
+Expected one of { ==, !=, <, <=, >, >=, ;, ), +, -, *, /, %} but got 'a' instead.

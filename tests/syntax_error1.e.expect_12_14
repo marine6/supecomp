@@ -1,0 +1,2 @@
+expr/supecomp: syntax error in tests/syntax_error1.e in line 2: unexpected token
+Expected '=' but got 'b' instead.
