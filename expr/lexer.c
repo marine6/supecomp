@@ -145,13 +145,16 @@ void skip_multi_line_comment(lexer_state* lex){
 }
 
 void find_next_character(lexer_state* lex) {
+	while (is_character_whitespace(get_character(lex))) {
+		next_character(lex);
+	}
 }
 
 void next_symbol(lexer_state* lex) {
   int i;
   find_next_character(lex);
   char character = get_character(lex);
-  if (character == CHAR_EOF) {
+  if (character == CHAR_EOF) { // End of file
     lex->symbol.tag = SYM_EOF;
   } else if (isdigit(character)) {
     // accommodate integer and null for termination
@@ -175,6 +178,118 @@ void next_symbol(lexer_state* lex) {
     next_character(lex);
     character = get_character(lex);
     lex->symbol.tag = SYM_SEMICOLON;
+  }
+  else if (character == '+') {
+      next_character(lex);
+      character = get_character(lex);
+      lex->symbol.tag = SYM_PLUS;
+  }
+  else if (character == '-') {
+      next_character(lex);
+      character = get_character(lex);
+      lex->symbol.tag = SYM_MINUS;
+  }
+  else if (character == '*') {
+      next_character(lex);
+      character = get_character(lex);
+      lex->symbol.tag = SYM_ASTERISK;
+  }
+  else if (character == '/') {
+      next_character(lex);
+      character = get_character(lex);
+      lex->symbol.tag = SYM_DIV;
+  }
+  else if (character == '=') {
+      next_character(lex);
+      character = get_character(lex);
+      if (character == '=') {
+          next_character(lex);
+          character = get_character(lex);
+          lex->symbol.tag = SYM_EQUALITY;
+      } else {
+          lex->symbol.tag = SYM_ASSIGN;
+      }
+  }
+  else if (character == '(') {
+      next_character(lex);
+      character = get_character(lex);
+      lex->symbol.tag = SYM_LPARENTHESIS;
+  }
+  else if (character == ')') {
+      next_character(lex);
+      character = get_character(lex);
+      lex->symbol.tag = SYM_RPARENTHESIS;
+  }
+  else if (character == '{') {
+      next_character(lex);
+      character = get_character(lex);
+      lex->symbol.tag = SYM_LBRACE;
+  }
+  else if (character == '}') {
+      next_character(lex);
+      character = get_character(lex);
+      lex->symbol.tag = SYM_RBRACE;
+  }
+  else if (character == ',') {
+      next_character(lex);
+      character = get_character(lex);
+      lex->symbol.tag = SYM_COMMA;
+  }
+  else if (character == '<') {
+      next_character(lex);
+      character = get_character(lex);
+      if (character == '=') {
+          next_character(lex);
+          character = get_character(lex);
+          lex->symbol.tag = SYM_LEQ;
+      } else {
+          lex->symbol.tag = SYM_LT;
+      }
+  }
+  else if (character == '>') {
+      next_character(lex);
+      character = get_character(lex);
+      if (character == '=') {
+          next_character(lex);
+          character = get_character(lex);
+          lex->symbol.tag = SYM_GEQ;
+      } else {
+          lex->symbol.tag = SYM_GT;
+      }
+  }
+  else if (character == '!') {
+      next_character(lex);
+      character = get_character(lex);
+      if (character == '=') {
+          next_character(lex);
+          character = get_character(lex);
+          lex->symbol.tag = SYM_NOTEQ;
+      } else {
+          lexer_error_character(lex,character,'=');
+      }
+  }
+  else if (character == '%') {
+      next_character(lex);
+      character = get_character(lex);
+      lex->symbol.tag = SYM_MOD;
+  }
+  else if (isalpha(character)) { // in the alphabet
+      // accommodate identifier and null for termination
+      if(lex->symbol.id) free(lex->symbol.id);
+      lex->symbol.id = malloc(MAX_INTEGER_LENGTH + 1);
+      i = 0;
+	  while (isalpha(character) != 0) { // What if function start with _ ?
+          next_character(lex);
+          if (i >= MAX_IDENTIFIER_LENGTH) {
+              lexer_error_message(lex, "identifier out of bound");
+              exit(EXITCODE_SCANNERERROR);
+          }
+          lex->symbol.id[i] =  character;
+          i++;
+          character = get_character(lex);
+	  }
+      lex->symbol.id[i] =  0; // null-terminated string
+      lex->symbol.tag = identifier_or_keyword(lex->symbol.id);
   }
   else {
     print_line_number( "lexer error", lex->line_number);
