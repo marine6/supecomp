@@ -3,11 +3,11 @@
 DIR=$1
 
 say_ok(){
-    echo -ne "\t\e[32mOK\e[0m"
+    echo -ne "\t\x1b[32mOK\x1b[0m"
 }
 
 say_ko(){
-    echo -ne "\t\e[31mKO\e[0m"
+    echo -ne "\t\x1b[31mKO\x1b[0m"
 }
 
 say_ok_or_ko(){
