@@ -11,6 +11,9 @@ expr/expr_parser.c: $(ALPAGA) expr_grammar_action.g
 test: all
 	./test.sh expr
 
+mactest: all
+	./mac_test.sh expr
+
 clean:
 	make clean -C alpaga
 	make clean -C expr

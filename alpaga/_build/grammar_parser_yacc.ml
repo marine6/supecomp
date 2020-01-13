@@ -242,7 +242,7 @@ and _menhir_goto_list_qual_ident : _menhir_env -> 'ttv_tail -> _menhir_state -> 
                 let _menhir_stack = Obj.magic _menhir_stack in
                 let x = () in
                 let _v : (unit option) = 
-# 116 "/opt/opam/4.07.0/lib/menhir/standard.mly"
+# 116 "<standard.mly>"
     ( Some x )
 # 248 "grammar_parser_yacc.ml"
                  in
@@ -256,7 +256,7 @@ and _menhir_goto_list_qual_ident : _menhir_env -> 'ttv_tail -> _menhir_state -> 
         | CODE _ ->
             let _menhir_stack = Obj.magic _menhir_stack in
             let _v : (unit option) = 
-# 114 "/opt/opam/4.07.0/lib/menhir/standard.mly"
+# 114 "<standard.mly>"
     ( None )
 # 262 "grammar_parser_yacc.ml"
              in
@@ -288,7 +288,7 @@ and _menhir_goto_qualifier : _menhir_env -> 'ttv_tail -> (Qualifiers.qualt optio
 
 and _menhir_fail : unit -> 'a =
   fun () ->
-    Printf.fprintf Pervasives.stderr "Internal failure -- please contact the parser generator's developers.\n%!";
+    Printf.fprintf stderr "Internal failure -- please contact the parser generator's developers.\n%!";
     assert false
 
 and _menhir_goto_rules : _menhir_env -> 'ttv_tail -> _menhir_state -> ((string * (string * Qualifiers.qualt option) list * string option) list) -> 'ttv_return =
@@ -744,7 +744,7 @@ and main : (Lexing.lexbuf -> token) -> Lexing.lexbuf -> (
 
 # 746 "grammar_parser_yacc.ml"
 
-# 233 "/opt/opam/4.07.0/lib/menhir/standard.mly"
+# 269 "<standard.mly>"
   
 
 # 751 "grammar_parser_yacc.ml"
