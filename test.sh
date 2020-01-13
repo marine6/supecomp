@@ -3,11 +3,11 @@
 DIR=$1
 
 say_ok(){
-    echo -ne "\t\e[32mOK\e[0m"
+    echo -ne "\t\x1b[32mOK\x1b[0m"
 }
 
 say_ko(){
-    echo -ne "\t\e[31mKO\e[0m"
+    echo -ne "\t\x1b[31mKO\x1b[0m"
 }
 
 say_ok_or_ko(){
@@ -34,7 +34,7 @@ test_asm(){
     P2=$3
     TARGET=$4
     OPTS=$5
-    EXE=`tempfile`
+    EXE=`mktemp`
     chmod u+x $EXE
     $DIR/supecomp $F -target $TARGET $OPTS -libdir $DIR/runtime_$TARGET/ -o $EXE 2>&1>/dev/null
     ($EXE $P1 $P2 | diff "$F.expect_${P1}_${P2}" -) 2>&1>/dev/null
