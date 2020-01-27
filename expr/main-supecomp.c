@@ -361,7 +361,7 @@ int main(int argc, char** argv) {
         produce_x86asm(fileno(f), lin, m64);
       close_file(f);
     }
-    if(exe_file != NULL){
+    if(exe_file != NULL && lin != NULL){
       if(target_riscv)
         compile_riscv(lin, libdir, exe_file);
       else
