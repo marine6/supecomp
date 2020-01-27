@@ -36,8 +36,8 @@ test_asm(){
     OPTS=$5
     EXE=`mktemp`
     chmod u+x $EXE
-    $DIR/supecomp $F -target $TARGET $OPTS -libdir $DIR/runtime_$TARGET/ -o $EXE 2>&1>/dev/null
-    ($EXE $P1 $P2 | diff "$F.expect_${P1}_${P2}" -) 2>&1>/dev/null
+    $DIR/supecomp $F -target $TARGET $OPTS -libdir $DIR/runtime_$TARGET/ -o $EXE 1>/dev/null 2>&1
+    ($EXE $P1 $P2 | diff "$F.expect_${P1}_${P2}" -)  1>/dev/null 2>&1
     say_ok_or_ko "$?"
     rm $EXE
 }

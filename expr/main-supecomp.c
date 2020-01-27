@@ -319,13 +319,12 @@ int main(int argc, char** argv) {
         printf("%s: could not close file descriptor %p\n", myname, source_fd);
         exit(EXITCODE_IOERROR);
       }
-      ep = make_eprog(ast);
-      cfg = cfg_of_e_prog(ep);
-      cfg = dead_assign_elimination_prog(cfg);
-      cfg = constant_propagation_cfg_prog(cfg);
+      /* ep = make_eprog(ast); */
+      /* cfg = cfg_of_e_prog(ep); */
       /* cfg = dead_assign_elimination_prog(cfg); */
-      rtl = rtl_of_cfg_prog(cfg);
-      lin = linearize_prog(rtl);
+      /* cfg = constant_propagation_cfg_prog(cfg); */
+      /* rtl = rtl_of_cfg_prog(cfg); */
+      /* lin = linearize_prog(rtl); */
     }
 
     if(ast_file != NULL){
