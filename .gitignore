@@ -7,3 +7,4 @@ expr/table.html
 alpaga/parser_generator.native
 expr/expr_parser.c
 expr/expr_parser.h
+tests/pngs
