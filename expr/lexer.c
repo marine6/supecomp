@@ -138,10 +138,26 @@ void prev_character(lexer_state* lex){
 
 /* Called with lex just after "//"; return with lex just after a line break */
 void skip_single_line_comment(lexer_state* lex){
+    while (!is_character_new_line(get_character(lex))) {
+        next_character(lex);
+    }
 }
 
 /* Called with lex just after "/ *"; return with lex just after a "* /" */
 void skip_multi_line_comment(lexer_state* lex){
+    int end = 0;
+    while(end != 1) {
+        char character = get_character(lex);
+        if (character == '*') {
+            next_character(lex);
+            character = get_character(lex);
+            if (character == '/') {
+                end = 1;
+                next_character(lex);
+                character = get_character(lex);
+            }
+        }
+    }
 }
 
 void find_next_character(lexer_state* lex) {
@@ -197,7 +213,13 @@ void next_symbol(lexer_state* lex) {
   else if (character == '/') {
       next_character(lex);
       character = get_character(lex);
-      lex->symbol.tag = SYM_DIV;
+      if (character == '*') {
+          skip_multi_line_comment(lex);
+      } else if (character == '/') {
+          skip_single_line_comment(lex);
+      } else {
+          lex->symbol.tag = SYM_DIV;
+      }
   }
   else if (character == '=') {
       next_character(lex);
@@ -273,12 +295,12 @@ void next_symbol(lexer_state* lex) {
       character = get_character(lex);
       lex->symbol.tag = SYM_MOD;
   }
-  else if (isalpha(character)) { // in the alphabet
+  else if (isalpha(character) || (character == '_')) { // in the alphabet
       // accommodate identifier and null for termination
       if(lex->symbol.id) free(lex->symbol.id);
       lex->symbol.id = malloc(MAX_INTEGER_LENGTH + 1);
       i = 0;
-	  while (isalpha(character) != 0) { // What if function start with _ ?
+	  while ((isalpha(character) || (character == '_')) != 0) { // What if function start with _ ?
           next_character(lex);
           if (i >= MAX_IDENTIFIER_LENGTH) {
               lexer_error_message(lex, "identifier out of bound");
