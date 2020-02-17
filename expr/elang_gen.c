@@ -98,7 +98,16 @@ struct expression* make_expr(struct ast_node* ast);
 
 struct expression* make_terms(struct list* l){
   struct expression* res = NULL;
-  // À compléter !
+  res = make_expr(l->elt);
+  l = l->next;
+  while (l) {
+      struct ast_node* node = l->elt;
+      binop_t tag = binop_of_ast(node->tag);
+      l = l->next;
+      struct expression* e2 = make_expr(l->elt);
+      res = make_expr_binop(tag, res, e2);
+      l = l->next;
+  }
   return res;
 }
 
@@ -167,13 +176,20 @@ struct instruction* make_instr_while(struct expression* cmp,
   return i;
 }
 
+struct instruction* make_instr_block(struct list* l){
+    struct instruction* i = new_instr();
+    i->type = IBLOCK;
+    i->iblock.l = l;
+    return i;
+}
+
+
 struct instruction* make_instr(struct ast_node* ast){
 
   switch(ast->tag){
   case AST_IBLOCK:
     {
-         // À compléter !
-         return NULL;
+        return make_instr_block(ast->children);
     }
   case AST_IASSIGN:
     return make_instr_assign(string_of_string_leaf(list_nth(ast->children,0)),

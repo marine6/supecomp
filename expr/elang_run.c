@@ -33,6 +33,16 @@ int run_eprog(struct eprog* p, struct list* args){
   string_int_state_t* s = NULL;
   // Construction de l'état initial
 
+  list* args_name = p->args;
+  list* args_val = args;
+
+  while (args_val) {
+      int value = * (int *) args_val->elt;
+      string_int_set_val(s,args_name->elt, value);
+      args_name = args_name->next;
+      args_val = args_val->next;
+  }
+
   // Appel de run_instruction et retour de la valeur de retour
      terminate_string_int_state(s);
      return 0;
