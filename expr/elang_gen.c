@@ -85,7 +85,6 @@ enum binop_t binop_of_ast(enum ast_tag t){
   }
 }
 
-
 enum unop_t unop_of_ast(enum ast_tag t){
   switch(t){
   case AST_ENEG: return ENEG;
@@ -99,19 +98,7 @@ struct expression* make_expr(struct ast_node* ast);
 
 struct expression* make_terms(struct list* l){
   struct expression* res = NULL;
-  list* t = l;
-  while (t){
-    if(!res){
-      res = make_expr(t->elt);
-      t = t->next;
-    } else {
-      struct ast_node* n = (struct ast_node*)t->elt;
-      enum binop_t bin = binop_of_ast(n->tag);
-      t = t->next;
-      res = make_expr_binop(bin, res, make_expr(t->elt));
-      t = t -> next;
-    }
-  }
+  // À compléter !
   return res;
 }
 
@@ -185,16 +172,8 @@ struct instruction* make_instr(struct ast_node* ast){
   switch(ast->tag){
   case AST_IBLOCK:
     {
-      struct instruction* i = (struct instruction*)malloc(sizeof(struct instruction));
-      i->type = IBLOCK;
-      list* l = ast->children;
-      list* linstrs = NULL;
-      while(l){
-        linstrs = list_append(linstrs, make_instr(l->elt));
-        l = l->next;
-      }
-      i->iblock.l = linstrs;
-      return i;
+         // À compléter !
+         return NULL;
     }
   case AST_IASSIGN:
     return make_instr_assign(string_of_string_leaf(list_nth(ast->children,0)),
@@ -217,6 +196,10 @@ struct instruction* make_instr(struct ast_node* ast){
 }
 
 struct eprog* make_eprog(struct ast_node* ast){
+  if(!ast){
+    fprintf(stderr, "make_eprog: the AST is NULL! Aborting...\n");
+    exit(1);
+  }
   struct eprog* p = (struct eprog*)malloc(sizeof(struct eprog));
   assert(ast->tag == AST_NODE_FUNDEF);
   assert(list_length(ast->children) == 3);
