@@ -54,23 +54,27 @@ int* run_instruction(string_int_state_t** s, struct instruction* i){
     switch(i->type){
         case IIFTHENELSE:
             if(i->iif.cmp){
-                return   run_expression(*s,i->iif.cmp);
+                int *i_if = malloc(sizeof(int));
+                *i_if = run_expression(*s,i->iassign.e);
+                return i_if;
             }
 
             else if(i->iif.ithen){
-                return  run_instruction(s,i->iif.ithen);
+                return run_instruction(s,i->iif.ithen);
             }
 
             else if(i->iif.ielse){
-                return  run_instruction(s,i->iif.ielse);
+                return run_instruction(s,i->iif.ielse);
             }
             break;
         case IWHILE:
             if(i->iwhile.cmp){
-                return  run_expression(*s,i->iwhile.cmp);
+                int *i_while = malloc(sizeof(int));
+                *i_while = run_expression(*s,i->iassign.e);
+                return i_while;
             }
             else if(i->iwhile.i){
-                return  run_instruction(s,i->iwhile.i);
+                return run_instruction(s,i->iwhile.i);
             }
         case IASSIGN:
             if(i->iassign.var){
@@ -78,17 +82,21 @@ int* run_instruction(string_int_state_t** s, struct instruction* i){
              //  run_expression(*s,i->iassign.var);
             }
             else if(i->iassign.e){
-                return  run_expression(*s,i->iassign.e);
+                int *assign = malloc(sizeof(int));
+                *assign = run_expression(*s,i->iassign.e);
+                return assign;
             }
             break;
-
-
-        case IRETURN:
-            return run_expression(*s,i->ireturn.e);
-
-        case IPRINT:
-            return run_expression(*s,i->iprint.e);
-
+        case IRETURN:{
+            int *i_return = malloc(sizeof(int));
+            *i_return = run_expression(*s,i->iassign.e);
+            return i_return;
+        }
+        case IPRINT:{
+            int *i_print = malloc(sizeof(int));
+            *i_print = run_expression(*s,i->iassign.e);
+            return i_print;
+        }
         case IBLOCK:
         {
             list* n = i->iblock.l;
