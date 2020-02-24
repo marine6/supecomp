@@ -7,20 +7,100 @@
 #include "elang.h"
 #include "state.h"
 
-int run_unop(enum unop_t u, int e){
-  assert(0);
+int run_unop(enum unop_t u, int e) {
+    switch (u) {
+        case ENEG:
+            return -e;
+        default:
+            return e;
+    }
 }
 
 int run_binop(enum binop_t b, int e1, int e2){
-  assert(0);
+    switch(b){
+        case EADD: return e1+e2;
+        case ESUB: return e1-e2;
+        case EMUL: return e1*e2;
+        case EDIV: return e1/e2;
+        case EMOD: return e1%e2;
+        case CEQ: return e1==e2;
+        case CNEQ: return e1!=e2;
+        case CLT: return e1<e2;
+        case CGT: return e1>e2;
+        case CLE: return e1<=e2;
+        case CGE: return e1>=e2;
+    }
+    assert(0);
 }
 
 int run_expression(string_int_state_t* s, struct expression* e){
+    switch(e->etype){
+        case EINT:
+           return e->eint.i;
+        case EVAR:
+            return string_int_get_val(s,e->var.s);
+
+        case EUNOP:
+            return run_unop(e->unop.unop,run_expression(s->next,e->unop.e));
+        case EBINOP:
+            return run_binop(e->binop.binop,run_expression(s->next,e->binop.e1),run_expression(s->next,e->binop.e2));
+
+    }
   printf("run_expression: unexpected expression type: %d", e->etype);
   exit(1);
 }
 
 int* run_instruction(string_int_state_t** s, struct instruction* i){
+    switch(i->type){
+        case IIFTHENELSE:
+            if(i->iif.cmp){
+                return   run_expression(*s,i->iif.cmp);
+            }
+
+            else if(i->iif.ithen){
+                return  run_instruction(s,i->iif.ithen);
+            }
+
+            else if(i->iif.ielse){
+                return  run_instruction(s,i->iif.ielse);
+            }
+            break;
+        case IWHILE:
+            if(i->iwhile.cmp){
+                return  run_expression(*s,i->iwhile.cmp);
+            }
+            else if(i->iwhile.i){
+                return  run_instruction(s,i->iwhile.i);
+            }
+        case IASSIGN:
+            if(i->iassign.var){
+                // err de compilation
+             //  run_expression(*s,i->iassign.var);
+            }
+            else if(i->iassign.e){
+                return  run_expression(*s,i->iassign.e);
+            }
+            break;
+
+
+        case IRETURN:
+            return run_expression(*s,i->ireturn.e);
+
+        case IPRINT:
+            return run_expression(*s,i->iprint.e);
+
+        case IBLOCK:
+        {
+            list* n = i->iblock.l;
+            while(n){
+                run_instruction(s,n->elt);
+                n = n -> next;
+            }
+        }
+
+
+
+    }
   printf("run_instruction: unexpected instruction type: %d", i->type);
   exit(1);
 }
