@@ -70,7 +70,7 @@ int* run_instruction(string_int_state_t** s, struct instruction* i){
         case IWHILE:
             if(i->iwhile.cmp){
                 int *i_while = malloc(sizeof(int));
-                *i_while = run_expression(*s,i->iassign.e);
+                *i_while = run_expression(*s,i->iwhile.cmp);
                 return i_while;
             }
             else if(i->iwhile.i){
@@ -79,22 +79,25 @@ int* run_instruction(string_int_state_t** s, struct instruction* i){
         case IASSIGN:
             if(i->iassign.var){
                 // err de compilation
-             //  run_expression(*s,i->iassign.var);
+                // run_expression(*s,i->iassign.var);
+                int *i_assign = malloc(sizeof(int));
+                *i_assign = run_expression(*s,i->iassign.var);
+                return i_assign;
             }
             else if(i->iassign.e){
-                int *assign = malloc(sizeof(int));
-                *assign = run_expression(*s,i->iassign.e);
-                return assign;
+                int *i_assign = malloc(sizeof(int));
+                *i_assign = run_expression(*s,i->iassign.e);
+                return i_assign;
             }
             break;
         case IRETURN:{
             int *i_return = malloc(sizeof(int));
-            *i_return = run_expression(*s,i->iassign.e);
+            *i_return = run_expression(*s,i->ireturn.e);
             return i_return;
         }
         case IPRINT:{
             int *i_print = malloc(sizeof(int));
-            *i_print = run_expression(*s,i->iassign.e);
+            *i_print = run_expression(*s,i->iprint.e);
             return i_print;
         }
         case IBLOCK:
