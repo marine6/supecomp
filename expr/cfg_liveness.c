@@ -22,18 +22,17 @@ list* expr_used_vars(struct expression* e){
         case EVAR:
             return cons(e->var.s, NULL);
         case EUNOP:
-            return expr_used_vars(e->unop.e)
+            return expr_used_vars(e->unop.e);
         case EBINOP:
-            struct list *l = expr_used_vars(e->binop.e1);
-            if (l == NULL) {
+            if (expr_used_vars(e->binop.e1) == NULL) {
                 return expr_used_vars(e->binop.e2);
             }
-            struct list *l2 = l;
+            struct list *l2 = expr_used_vars(e->binop.e1);
             while (l2->next != NULL) {
                 l2 = l2->next;
             }
             l2->next = expr_used_vars(e->binop.e2);
-            return l;
+            return expr_used_vars(e->binop.e1);
     }
     return NULL;
 }
