@@ -4,7 +4,7 @@ ocamlfind ocamldep -package str -modules parser_generator.ml > parser_generator.
 # Target: grammar_parser.ml.depends, tags: { package(str), extension:ml, file:grammar_parser.ml, ocaml, ocamldep, quiet, traverse, use_menhir }
 ocamlfind ocamldep -package str -modules grammar_parser.ml > grammar_parser.ml.depends
 # Target: grammar_lexer.mll, tags: { package(str), extension:mll, file:grammar_lexer.mll, lexer, ocaml, ocamllex, quiet, traverse, use_menhir }
-/opt/opam/4.07.0/bin/ocamllex.opt -q grammar_lexer.mll
+ocamllex.opt -q grammar_lexer.mll
 # Target: grammar_lexer.ml.depends, tags: { package(str), extension:ml, file:grammar_lexer.ml, ocaml, ocamldep, quiet, traverse, use_menhir }
 ocamlfind ocamldep -package str -modules grammar_lexer.ml > grammar_lexer.ml.depends
 # Target: grammar_parser_yacc.mly.depends, tags: { package(str), extension:mly, file:grammar_parser_yacc.mly, infer, menhir_ocamldep, ocaml, ocamldep, quiet, traverse, use_menhir }
