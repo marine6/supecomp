@@ -99,8 +99,20 @@ int new_reg(){
 }
 
 int get_reg_for_var(char* v){
-     // À compléter !
-     return -1;
+    struct symtable* symtable = symt;
+    while(symtable){
+        if(symtable->var == v){
+            return symtable->reg;
+        }
+        symtable = symtable->next;
+    }
+    struct symtable* new_symtable = (struct symtable*) malloc(sizeof(symtable));
+    new_symtable->var = v;
+    new_symtable->reg=new_reg();
+    new_symtable->next = symt;
+    symt = new_symtable;
+    return symt->reg;
+
 }
 
 typedef struct expr_compiled {
@@ -115,7 +127,26 @@ expr_compiled* new_expr_compiled(){
 }
 
 expr_compiled* rtl_ops_of_expression(struct expression* e){
-  return NULL;
+    struct expr_compiled* new_expr_compiled =  new_expr_compiled();
+   switch (e->etype){
+       case EINT:
+          new_expr_compiled->r = e->eint;
+           break;
+       case EVAR:
+           new_expr_compiled->r = get_reg_for_var(e->var);
+           break;
+       case EUNOP:
+           rtl_ops_of_expression( e->unop.e);
+           break;
+       case EBINOP:
+           fprintf(fd, "(");
+           print_expression(fd, e->binop.e1);
+           fprintf(fd, "%s", string_of_binop(e->binop.binop));
+           print_expression(fd, e->binop.e2);
+           fprintf(fd, ")");
+           break;
+   }
+  return new_expr_compiled;
 }
 
 list* rtl_ops_of_cfg_node(node_t* c){
