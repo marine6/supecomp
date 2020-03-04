@@ -80,7 +80,7 @@ border:none;
  <tr id='rule-14' style='border: none;'><td class='left'>(14)</td> <td class='left'>  </td class='left'> <td class='left'> -> </td> <td class='left'>  <a href='#nt-STATEMENT' style='color: black;'>STATEMENT</a> <a href='#nt-STATEMENTS' style='color: black;'>STATEMENTS</a></td><td class='left'><pre> return cons($1, $2); </pre></td></tr>
 
  <tr id='rule-15' style='border-top: solid 1px;'><td class='left'>(15)</td> <td class='left'> <span id='nt-ELSE_STATEMENT'>ELSE_STATEMENT</span> </td class='left'> <td class='left'> -> </td> <td class='left'>  SYM_ELSE SYM_LBRACE <a href='#nt-START_STATEMENTS' style='color: black;'>START_STATEMENTS</a> SYM_RBRACE</td><td class='left'><pre> return $3; </pre></td></tr>
- <tr id='rule-16' style='border: none;'><td class='left'>(16)</td> <td class='left'>  </td class='left'> <td class='left'> -> </td> <td class='left'> &epsilon;</td><td class='left'><pre> return NULL; </pre></td></tr>
+ <tr id='rule-16' style='border: none;'><td class='left'>(16)</td> <td class='left'>  </td class='left'> <td class='left'> -> </td> <td class='left'> &epsilon;</td><td class='left'><pre> return make_node(AST_IBLOCK, NULL); </pre></td></tr>
 
  <tr id='rule-17' style='border-top: solid 1px;'><td class='left'>(17)</td> <td class='left'> <span id='nt-EQ'>EQ</span> </td class='left'> <td class='left'> -> </td> <td class='left'>  <a href='#nt-TERM' style='color: black;'>TERM</a> <a href='#nt-TERMS' style='color: black;'>TERMS</a></td><td class='left'><pre> return make_node(AST_TERMS, cons($1, $2)); </pre></td></tr>
 

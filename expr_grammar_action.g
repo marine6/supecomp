@@ -44,7 +44,7 @@ STATEMENT -> SYM_RETURN EXPR SYM_SEMICOLON
 { return make_node(AST_IRETURN, cons($2, NULL)); }
 
 ELSE_STATEMENT -> SYM_ELSE SYM_LBRACE START_STATEMENTS SYM_RBRACE { return $3; }
-ELSE_STATEMENT -> { return NULL; }
+ELSE_STATEMENT -> { return make_node(AST_IBLOCK, NULL); }
 
 EXPR -> EQ EQS { return make_node(AST_EQS, cons($1, $2)); }
 

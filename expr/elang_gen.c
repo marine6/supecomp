@@ -188,41 +188,14 @@ struct instruction *make_instr_while(struct expression *cmp,
 struct instruction *make_instr(struct ast_node *ast);
 
 struct instruction *make_instr_block(struct list *child_list) {
-//    struct instruction *i = new_instr();
-//    i->type = IBLOCK;
-//
-//    struct list *l = cons(make_instr(child_list->elt), NULL);
-//    struct list *ll = l;
-//    child_list = child_list->next;
-//    while (child_list->next != NULL) {
-//        struct list *new = cons(make_instr(child_list->elt), l);
-//        ll->next = new;
-//        ll = new;
-//        child_list = child_list->next;
-//    }
-//
-//    struct instr_block iblock;
-//    iblock.l = l;
-//    i->iblock = iblock;
-//    return i;
     struct instruction* i = new_instr();
     i->type = IBLOCK;
+    i->iblock.l = NULL;
 
-    if (!child_list) {
-        return NULL;
+    while (child_list) {
+        i->iblock.l = list_append(i->iblock.l,make_instr(child_list->elt));
+        child_list = child_list->next;
     }
-
-    struct list* instr_list = cons(make_instr(child_list->elt), NULL);
-    struct list* last = instr_list;
-    struct list* childs = child_list->next;
-
-    while (childs) {
-        struct list* l = cons(make_instr(childs->elt), NULL);
-        last->next = l;
-        last = last->next;
-        childs = childs->next;
-    }
-    i->iblock.l = instr_list;
     return i;
 }
 

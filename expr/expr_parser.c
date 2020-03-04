@@ -246,11 +246,11 @@ void* parse_STATEMENTS(lexer_state* lex){
 void* parse_ELSE_STATEMENT(lexer_state* lex){
   if(lex->symbol.tag ==  SYM_IDENTIFIER){
 
-     return NULL; 
+     return make_node(AST_IBLOCK, NULL); 
 }
   if(lex->symbol.tag ==  SYM_IF){
 
-     return NULL; 
+     return make_node(AST_IBLOCK, NULL); 
 }
   if(lex->symbol.tag ==  SYM_ELSE){
     eat(lex, SYM_ELSE);
@@ -262,19 +262,19 @@ void* parse_ELSE_STATEMENT(lexer_state* lex){
 }
   if(lex->symbol.tag ==  SYM_RBRACE){
 
-     return NULL; 
+     return make_node(AST_IBLOCK, NULL); 
 }
   if(lex->symbol.tag ==  SYM_WHILE){
 
-     return NULL; 
+     return make_node(AST_IBLOCK, NULL); 
 }
   if(lex->symbol.tag ==  SYM_RETURN){
 
-     return NULL; 
+     return make_node(AST_IBLOCK, NULL); 
 }
   if(lex->symbol.tag ==  SYM_PRINT){
 
-     return NULL; 
+     return make_node(AST_IBLOCK, NULL); 
 }
   syntax_error_message(lex, "error while parsing ELSE_STATEMENT");
   printf("Expected one of ");
