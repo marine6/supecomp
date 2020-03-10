@@ -101,18 +101,17 @@ int new_reg(){
 int get_reg_for_var(char* v){
     struct symtable* symtable = symt;
     while(symtable){
-        if(symtable->var == v){
+        if(!strcmp(symtable->var, v)){
             return symtable->reg;
         }
         symtable = symtable->next;
     }
     struct symtable* new_symtable = (struct symtable*) malloc(sizeof(symtable));
     new_symtable->var = v;
-    new_symtable->reg=new_reg();
+    new_symtable->reg = new_reg();
     new_symtable->next = symt;
     symt = new_symtable;
     return symt->reg;
-
 }
 
 typedef struct expr_compiled {
@@ -123,44 +122,101 @@ typedef struct expr_compiled {
 expr_compiled* new_expr_compiled(){
   expr_compiled* ec = (expr_compiled*)malloc(sizeof(expr_compiled));
   ec->ops = NULL;
+  ec->r = 0;
   return ec;
 }
 
 expr_compiled* rtl_ops_of_expression(struct expression* e){
-    struct expr_compiled* new_expr_compiled =  new_expr_compiled();
-   switch (e->etype){
-       case EINT:
-          new_expr_compiled->r = e->eint;
+    expr_compiled* n_expr_compiled =  new_expr_compiled();
+    switch (e->etype) {
+        case EINT: {
+            int n_reg = new_reg();
+            rtl_op* new_op = new_rtl_op_imm(n_reg, e->eint.i);
+            n_expr_compiled->r = n_reg;
+            n_expr_compiled->ops = cons(new_op,NULL);
+            break;
+        }
+        case EVAR: {
+            n_expr_compiled->r =  get_reg_for_var(e->var.s);
+            break;
+        }
+       case EUNOP: {
+           expr_compiled* temp_expr_compiled = rtl_ops_of_expression(e->unop.e);
+           int n_reg = new_reg();
+           rtl_op* new_op = new_rtl_op_unop(e->unop.unop, n_reg, temp_expr_compiled->r);
+           n_expr_compiled->r = n_reg;
+           n_expr_compiled->ops = list_append(
+                   temp_expr_compiled->ops, new_op);
            break;
-       case EVAR:
-           new_expr_compiled->r = get_reg_for_var(e->var);
+       }
+        case EBINOP:{
+            expr_compiled* temp_expr_compiled1 = rtl_ops_of_expression(e->binop.e1);
+            expr_compiled* temp_expr_compiled2 = rtl_ops_of_expression(e->binop.e2);
+            int n_reg = new_reg();
+            rtl_op* new_op = new_rtl_op_binop(e->binop.binop, n_reg, temp_expr_compiled1->r, temp_expr_compiled2->r);
+            n_expr_compiled->r = n_reg;
+            n_expr_compiled->ops = list_append(concat(temp_expr_compiled1->ops, temp_expr_compiled2->ops), new_op);
            break;
-       case EUNOP:
-           rtl_ops_of_expression( e->unop.e);
-           break;
-       case EBINOP:
-           fprintf(fd, "(");
-           print_expression(fd, e->binop.e1);
-           fprintf(fd, "%s", string_of_binop(e->binop.binop));
-           print_expression(fd, e->binop.e2);
-           fprintf(fd, ")");
-           break;
+        }
    }
-  return new_expr_compiled;
+
+  return n_expr_compiled;
 }
 
 list* rtl_ops_of_cfg_node(node_t* c){
-  return NULL;
+    switch (c->type) {
+        case NODE_GOTO:
+            return cons(new_rtl_op_goto(c->goto_succ), NULL);
+        case NODE_ASSIGN: {
+            expr_compiled* compiled_assign= rtl_ops_of_expression(c->assign.e);
+
+            return concat(compiled_assign->ops, cons(new_rtl_op_mov(get_reg_for_var(c->assign.var), compiled_assign->r), cons(new_rtl_op_goto(c->assign.succ), NULL)));
+        }
+        case NODE_COND:{
+            expr_compiled* compiled_cond= rtl_ops_of_expression(c->cond.cond);
+            return list_append(compiled_cond->ops, new_rtl_op_branch(compiled_cond->r,c->cond.succ1, c->cond.succ2));
+        }
+        case NODE_PRINT:{
+            expr_compiled* compiled_print = rtl_ops_of_expression(c->print.e);
+
+            return concat(compiled_print->ops, cons(new_rtl_op_print(compiled_print->r), cons(new_rtl_op_goto(c->print.succ), NULL)));
+        }
+        case NODE_RETURN:
+            {
+            expr_compiled* compiled_ret = rtl_ops_of_expression(c->ret.e);
+            return list_append(compiled_ret->ops, new_rtl_op_return(compiled_ret->r));
+        }
+        default:
+            return NULL;
+    }
 }
 
 rtl* rtl_of_cfg_graph(cfg* c){
-     return NULL;
+    rtl * rtl_graph = malloc(sizeof(rtl));
+    rtl_graph->ops = cons(new_rtl_op_label(c->id), rtl_ops_of_cfg_node(c->node));
+    rtl_graph->id = c->id;
+    if (c->next == NULL) {
+        rtl_graph->next = NULL;
+    } else {
+        rtl_graph->next = rtl_of_cfg_graph(c->next);
+        rtl_graph->ops = concat(rtl_graph->ops, cons(new_rtl_op_goto(c->next->id), NULL));
+    }
+     return rtl_graph;
 }
 
 rtl_prog* rtl_of_cfg_prog(cfg_prog* cfg){
   struct rtl_prog* rtl = (struct rtl_prog*)malloc(sizeof(struct rtl_prog));
   rtl->fname = strdup(cfg->fname);
   rtl->args = NULL;
+  list* temp_args = cfg->args;
+  list* args_rtl = NULL;
+  while(temp_args) {
+    args_rtl = list_append_int(args_rtl, get_reg_for_var(temp_args->elt));
+    temp_args = temp_args->next;
+  }
+  rtl->args = args_rtl;
+  rtl->graph = rtl_of_cfg_graph(cfg->graph);
+  rtl->entry = cfg->entry;
   free_symtable(symt);
   return rtl;
 }
