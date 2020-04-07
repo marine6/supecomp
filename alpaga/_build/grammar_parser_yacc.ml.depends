@@ -1,1 +1,1 @@
-grammar_parser_yacc.ml: Lexing List Obj Pervasives Printf Qualifiers
+grammar_parser_yacc.ml: Lexing List Obj Printf Qualifiers
